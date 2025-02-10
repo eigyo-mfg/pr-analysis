@@ -4,8 +4,8 @@
   "description": "GitHub PR Analysis Tool",
   "main": "dist-electron/main.js",
   "scripts": {
-    "dev": "concurrently \"vite build -c electron.vite.config.ts --watch\" \"vite --host --force\" \"wait-on tcp:5173 && cross-env NODE_ENV=development ELECTRON_START_URL=http://localhost:5173 electron .\"",
-    "build": "vite build -c electron.vite.config.ts && vite build && electron-builder",
+    "dev": "vite build -c electron.vite.config.ts && vite serve --host --force & cross-env NODE_ENV=development ELECTRON_START_URL=http://localhost:5173 electron .",
+    "build": "vite build -c electron.vite.config.ts && electron-builder",
     "preview": "vite preview",
     "start": "electron ."
   },
@@ -34,6 +34,7 @@
     "cross-env": "^7.0.3",
     "electron": "^24.3.1",
     "electron-builder": "^24.13.3",
+    "electron-vite": "^2.3.0",
     "typescript": "^5.0.4",
     "vite": "^4.3.9",
     "vite-electron-plugin": "^0.8.3",

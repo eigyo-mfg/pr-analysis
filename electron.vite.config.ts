@@ -1,20 +1,20 @@
 import { builtinModules } from "module";
 import { resolve } from "path";
 import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 
 export default defineConfig({
+  plugins: [react()],
   build: {
+    outDir: "dist-electron",
+    emptyOutDir: true,
     lib: {
       entry: {
         main: resolve(__dirname, "src/main.ts"),
         preload: resolve(__dirname, "src/preload.ts"),
-        github: resolve(__dirname, "src/services/github.ts"),
       },
       formats: ["cjs"],
-      fileName: (format, entryName) => `${entryName}.js`,
     },
-    outDir: "dist-electron",
-    emptyOutDir: true,
     rollupOptions: {
       external: [
         "electron",
@@ -22,6 +22,9 @@ export default defineConfig({
         "@octokit/rest",
         ...builtinModules,
       ],
+      output: {
+        entryFileNames: "[name].js",
+      }
     },
   },
   resolve: {
@@ -29,10 +32,9 @@ export default defineConfig({
       "@": resolve(__dirname, "./src"),
     },
   },
-  optimizeDeps: {
-    exclude: ["electron", "electron-store"],
-  },
-  define: {
-    "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV),
-  },
+  base: "./",
+  server: {
+    port: 5173,
+    strictPort: true
+  }
 });
