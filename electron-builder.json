@@ -5,7 +5,9 @@
     "output": "release/${version}"
   },
   "files": [
-    "dist-electron/**/*"
+    "dist-electron/**/*",
+    "dist/**/*",
+    "index.html"
   ],
   "mac": {
     "target": ["dmg"]

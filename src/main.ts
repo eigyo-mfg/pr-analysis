@@ -84,7 +84,15 @@ const createWindow = () => {
     mainWindow.webContents.openDevTools();
   } else {
     // In production mode, load the built files
-    mainWindow.loadFile(join(__dirname, "..", "index.html"));
+    const path = join(__dirname, "..", "dist", "index.html");
+    mainWindow.loadFile(path).catch((err) => {
+      console.error("Failed to load:", path, err);
+      // フォールバックとして直接パスを試す
+      const fallbackPath = join(__dirname, "..", "index.html");
+      mainWindow.loadFile(fallbackPath).catch((err) => {
+        console.error("Fallback also failed:", fallbackPath, err);
+      });
+    });
   }
 };
 

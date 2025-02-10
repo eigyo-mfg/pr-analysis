@@ -4,7 +4,7 @@ import { resolve } from "path";
 
 export default defineConfig({
   plugins: [react()],
-  base: "./",
+  base: process.env.NODE_ENV === "production" ? "./" : "/",
   resolve: {
     alias: {
       "@": resolve(__dirname, "./src"),
@@ -15,7 +15,7 @@ export default defineConfig({
     strictPort: true,
   },
   build: {
-    outDir: "dist-electron",
+    outDir: "dist",
     emptyOutDir: true,
     rollupOptions: {
       input: {
