@@ -75,12 +75,13 @@ class GitHubService {
       for (const pr of filteredPRs) {
         stats.totalPRs++;
 
-        // Lead time calculation
+        // Lead time calculation (convert to days)
         if (pr.merged_at) {
-          const leadTime =
+          const leadTimeMs =
             new Date(pr.merged_at).getTime() -
             new Date(pr.created_at).getTime();
-          stats.averageLeadTime += leadTime;
+          const leadTimeDays = leadTimeMs / (1000 * 60 * 60 * 24); // Convert milliseconds to days
+          stats.averageLeadTime += leadTimeDays;
         }
 
         // Changed files and lines
@@ -118,9 +119,11 @@ class GitHubService {
         }
         stats.authorStats[author].prCount++;
         if (pr.merged_at) {
-          stats.authorStats[author].avgLeadTime +=
+          const leadTimeMs =
             new Date(pr.merged_at).getTime() -
             new Date(pr.created_at).getTime();
+          const leadTimeDays = leadTimeMs / (1000 * 60 * 60 * 24); // Convert milliseconds to days
+          stats.authorStats[author].avgLeadTime += leadTimeDays;
         }
         stats.authorStats[author].avgChangedFiles += files.length;
       }
