@@ -9,6 +9,18 @@ import {
   Legend,
 } from "recharts";
 import { useNavigate } from "react-router-dom";
+import { format } from "date-fns";
+
+interface PRDetails {
+  number: number;
+  title: string;
+  createdAt: string;
+  mergedAt: string | null;
+  author: string;
+  url: string;
+  repository: string;
+  leadTime: number;
+}
 
 interface PRMetrics {
   totalPRs: number;
@@ -16,6 +28,7 @@ interface PRMetrics {
   averageChangedFiles: number;
   averageChangedLines: number;
   requestChangesCount: number;
+  pullRequests: PRDetails[];
   authorStats: Record<
     string,
     {
@@ -143,6 +156,40 @@ export const Analysis: React.FC = () => {
           <Bar dataKey="Avg Lead Time (days)" fill="#82ca9d" />
           <Bar dataKey="Avg Changed Files" fill="#ffc658" />
         </BarChart>
+      </div>
+
+      <div className="pr-list">
+        <h3>Pull Request List</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Repository</th>
+              <th>Number</th>
+              <th>Title</th>
+              <th>Author</th>
+              <th>Created</th>
+              <th>Lead Time</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {metrics.pullRequests.map((pr) => (
+              <tr key={`${pr.repository}-${pr.number}`}>
+                <td>{pr.repository}</td>
+                <td>#{pr.number}</td>
+                <td>
+                  <a href={pr.url} target="_blank" rel="noopener noreferrer">
+                    {pr.title}
+                  </a>
+                </td>
+                <td>{pr.author}</td>
+                <td>{format(new Date(pr.createdAt), "yyyy-MM-dd")}</td>
+                <td>{pr.leadTime.toFixed(1)} days</td>
+                <td>{pr.mergedAt ? "Merged" : "Open"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

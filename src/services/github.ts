@@ -11,6 +11,17 @@ interface PRAnalysisParams {
   token: string;
 }
 
+interface PRDetails {
+  number: number;
+  title: string;
+  createdAt: string;
+  mergedAt: string | null;
+  author: string;
+  url: string;
+  repository: string;
+  leadTime: number;
+}
+
 class GitHubService {
   private octokit: Octokit | null = null;
 
@@ -49,6 +60,7 @@ class GitHubService {
       averageChangedFiles: 0,
       averageChangedLines: 0,
       requestChangesCount: 0,
+      pullRequests: [] as PRDetails[],
       authorStats: {} as Record<
         string,
         { prCount: number; avgLeadTime: number; avgChangedFiles: number }
@@ -74,15 +86,27 @@ class GitHubService {
 
       for (const pr of filteredPRs) {
         stats.totalPRs++;
+        let leadTimeDays = 0;
 
-        // Lead time calculation (convert to days)
         if (pr.merged_at) {
           const leadTimeMs =
             new Date(pr.merged_at).getTime() -
             new Date(pr.created_at).getTime();
-          const leadTimeDays = leadTimeMs / (1000 * 60 * 60 * 24); // Convert milliseconds to days
+          leadTimeDays = leadTimeMs / (1000 * 60 * 60 * 24);
           stats.averageLeadTime += leadTimeDays;
         }
+
+        // Add PR details
+        stats.pullRequests.push({
+          number: pr.number,
+          title: pr.title,
+          createdAt: pr.created_at,
+          mergedAt: pr.merged_at,
+          author: pr.user?.login || "unknown",
+          url: pr.html_url,
+          repository: repo,
+          leadTime: leadTimeDays,
+        });
 
         // Changed files and lines
         const { data: files } = await octokit.pulls.listFiles({
@@ -128,6 +152,12 @@ class GitHubService {
         stats.authorStats[author].avgChangedFiles += files.length;
       }
     }
+
+    // Sort PRs by creation date
+    stats.pullRequests.sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
 
     // Calculate averages
     if (stats.totalPRs > 0) {

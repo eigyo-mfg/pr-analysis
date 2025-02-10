@@ -193,3 +193,42 @@
   background: var(--primary-color);
   color: white;
 }
+
+.pr-list {
+  margin-top: 2rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.pr-list table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.pr-list th,
+.pr-list td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.pr-list th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+}
+
+.pr-list tr:hover {
+  background-color: #f8f9fa;
+}
+
+.pr-list a {
+  color: #0366d6;
+  text-decoration: none;
+}
+
+.pr-list a:hover {
+  text-decoration: underline;
+}
