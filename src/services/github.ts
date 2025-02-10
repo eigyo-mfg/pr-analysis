@@ -56,6 +56,7 @@ class GitHubService {
     const octokit = this.getClient(token);
     const stats = {
       totalPRs: 0,
+      mergedPRs: 0, // Add counter for merged PRs
       averageLeadTime: 0,
       averageChangedFiles: 0,
       averageChangedLines: 0,
@@ -88,12 +89,17 @@ class GitHubService {
         stats.totalPRs++;
         let leadTimeDays = 0;
 
+        // Calculate lead time
+        const startTime = new Date(pr.created_at).getTime();
         if (pr.merged_at) {
-          const leadTimeMs =
-            new Date(pr.merged_at).getTime() -
-            new Date(pr.created_at).getTime();
-          leadTimeDays = leadTimeMs / (1000 * 60 * 60 * 24);
+          stats.mergedPRs++; // Increment merged PRs counter
+          const endTime = new Date(pr.merged_at).getTime();
+          leadTimeDays = (endTime - startTime) / (1000 * 60 * 60 * 24);
           stats.averageLeadTime += leadTimeDays;
+        } else {
+          // For open PRs, calculate time from creation to now
+          const now = new Date().getTime();
+          leadTimeDays = (now - startTime) / (1000 * 60 * 60 * 24);
         }
 
         // Add PR details
@@ -142,13 +148,7 @@ class GitHubService {
           };
         }
         stats.authorStats[author].prCount++;
-        if (pr.merged_at) {
-          const leadTimeMs =
-            new Date(pr.merged_at).getTime() -
-            new Date(pr.created_at).getTime();
-          const leadTimeDays = leadTimeMs / (1000 * 60 * 60 * 24); // Convert milliseconds to days
-          stats.authorStats[author].avgLeadTime += leadTimeDays;
-        }
+        stats.authorStats[author].avgLeadTime += leadTimeDays;
         stats.authorStats[author].avgChangedFiles += files.length;
       }
     }
@@ -160,19 +160,22 @@ class GitHubService {
     );
 
     // Calculate averages
+    if (stats.mergedPRs > 0) {
+      // Use mergedPRs instead of totalPRs for lead time average
+      stats.averageLeadTime /= stats.mergedPRs;
+    }
     if (stats.totalPRs > 0) {
-      stats.averageLeadTime /= stats.totalPRs;
       stats.averageChangedFiles /= stats.totalPRs;
       stats.averageChangedLines /= stats.totalPRs;
-
-      // Calculate author averages
-      Object.values(stats.authorStats).forEach((authorStat) => {
-        if (authorStat.prCount > 0) {
-          authorStat.avgLeadTime /= authorStat.prCount;
-          authorStat.avgChangedFiles /= authorStat.prCount;
-        }
-      });
     }
+
+    // Calculate author averages
+    Object.values(stats.authorStats).forEach((authorStat) => {
+      if (authorStat.prCount > 0) {
+        authorStat.avgLeadTime /= authorStat.prCount;
+        authorStat.avgChangedFiles /= authorStat.prCount;
+      }
+    });
 
     return stats;
   }

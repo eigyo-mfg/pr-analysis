@@ -24,6 +24,7 @@ interface PRDetails {
 
 interface PRMetrics {
   totalPRs: number;
+  mergedPRs: number; // Add mergedPRs counter
   averageLeadTime: number;
   averageChangedFiles: number;
   averageChangedLines: number;
@@ -131,8 +132,12 @@ export const Analysis: React.FC = () => {
           <p>{metrics.totalPRs}</p>
         </div>
         <div className="metric-card">
-          <h3>Average Lead Time</h3>
-          <p>{Math.round(metrics.averageLeadTime / (24 * 60 * 60))} days</p>
+          <h3>Merged PRs</h3>
+          <p>{metrics.mergedPRs}</p>
+        </div>
+        <div className="metric-card">
+          <h3>Average Lead Time (Merged PRs)</h3>
+          <p>{Math.round(metrics.averageLeadTime)} days</p>
         </div>
         <div className="metric-card">
           <h3>Average Changed Files</h3>
@@ -184,7 +189,11 @@ export const Analysis: React.FC = () => {
                 </td>
                 <td>{pr.author}</td>
                 <td>{format(new Date(pr.createdAt), "yyyy-MM-dd")}</td>
-                <td>{pr.leadTime.toFixed(1)} days</td>
+                <td>
+                  {pr.mergedAt
+                    ? `${pr.leadTime.toFixed(1)} days`
+                    : `${pr.leadTime.toFixed(1)} days (in progress)`}
+                </td>
                 <td>{pr.mergedAt ? "Merged" : "Open"}</td>
               </tr>
             ))}
