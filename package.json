@@ -1,0 +1,42 @@
+{
+  "name": "github-pr-analysis",
+  "version": "1.0.0",
+  "description": "GitHub PR Analysis Tool",
+  "main": "dist-electron/main.js",
+  "scripts": {
+    "dev": "concurrently \"vite build -c electron.vite.config.ts --watch\" \"vite --host --force\" \"wait-on tcp:5173 && cross-env NODE_ENV=development ELECTRON_START_URL=http://localhost:5173 electron .\"",
+    "build": "vite build -c electron.vite.config.ts && vite build && electron-builder",
+    "preview": "vite preview",
+    "start": "electron ."
+  },
+  "dependencies": {
+    "@octokit/rest": "^19.0.7",
+    "date-fns": "^2.30.0",
+    "electron-squirrel-startup": "^1.0.1",
+    "electron-store": "^8.1.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.11.2",
+    "recharts": "^2.6.2"
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^6.4.2",
+    "@electron-forge/maker-deb": "^6.4.2",
+    "@electron-forge/maker-rpm": "^6.4.2",
+    "@electron-forge/maker-squirrel": "^6.4.2",
+    "@electron-forge/maker-zip": "^6.4.2",
+    "@electron-forge/plugin-auto-unpack-natives": "^6.4.2",
+    "@types/node": "^18.19.75",
+    "@types/react": "^18.2.7",
+    "@types/react-dom": "^18.2.4",
+    "@vitejs/plugin-react": "^4.3.4",
+    "concurrently": "^8.2.2",
+    "cross-env": "^7.0.3",
+    "electron": "^24.3.1",
+    "electron-builder": "^24.13.3",
+    "typescript": "^5.0.4",
+    "vite": "^4.3.9",
+    "vite-electron-plugin": "^0.8.3",
+    "wait-on": "^7.2.0"
+  }
+}
